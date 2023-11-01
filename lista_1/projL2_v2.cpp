@@ -70,13 +70,13 @@ Eigen::MatrixXd convert_vector(vector<float> F, int dim){
     return F_eigen;
 }
 
-int main(int argc, char* argv[]){
+void projL2_analisys(int numb_el){
 
     // Defining the domain
     float a = -2.0;
     float b = 2.0;
 
-    int nel = 16;       // number of elements
+    int nel = numb_el;  // number of elements
     
     int k = 1;          // polynomial degree
     int np = k*nel+1;   // mesh total nodes
@@ -186,10 +186,17 @@ int main(int argc, char* argv[]){
     ofstream csvFile(FileName);
     if (!csvFile.is_open()) {
         std::cerr << "Error opening the new CSV file." << std::endl;
-        return 1; // Return an error code
+        //return 1; // Return an error code
     }
 
     // Write data to the CSV file
+    for (int i = 0; i < np; ++i) {
+        csvFile << xl[i];
+        if (i < np - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }
+    }
+    csvFile << endl;
     for (int i = 0; i < np; ++i) {
         csvFile << u_eigen(i);
         if (i < np - 1) {
@@ -202,6 +209,23 @@ int main(int argc, char* argv[]){
     csvFile.close();
 
     std::cout << "CSV file written successfully." << std::endl;
+
+}
+
+int main(){
+
+    const int size = 9; 
+    int nels[size]; 
+
+    // Initialize the array (optional)
+    for (int i = 2; i < size; ++i) {
+        nels[i] = pow(2,i); // Initialize with values
+        cout << "Runing nel = " << nels[i] << "\n";
+
+        projL2_analisys(nels[i]);
+    }
+
+    
 
     return 0;
 }
