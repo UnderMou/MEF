@@ -1,7 +1,11 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <iomanip>
+
 #include "shl.cpp"
 #include "we.cpp"
+#include "pts.cpp"
 
 using namespace std;
 
@@ -24,9 +28,9 @@ vector<float> init_F(int n){
 void print_Matrix(vector<vector<float>> M, int dim){
     for (int i = 0; i < dim; i++){
         for (int j = 0; j < dim; j++){
-            cout << M[i][j] << " ";
+            cout << fixed << setprecision(2) << M[i][j] << "\t";
         }
-        cout << "\n";
+        cout << endl;
     }
 }
 
@@ -34,6 +38,10 @@ void print_Vector(vector<float> F, int dim){
     for (int i = 0; i < dim; i++){
         cout << F[i] << "\n";
     }
+}
+
+float f(float xx){
+    return sin(M_PI * xx);//*sin(M_PI * xx);
 }
 
 int main(){
@@ -79,6 +87,9 @@ int main(){
     vector<float> w(nint);
     w = init_F(nint);
 
+    vector<float> pt(nint);
+    pt = init_F(nint);
+
     float xx = 0.0;
 
     // Global problem construction
@@ -91,30 +102,42 @@ int main(){
         // print_Matrix(shg,nen);
         w = we(nint);
         // print_Vector(w,nint);
+        pt = pts(nint);
+        // print_Vector(pt,nint);
 
         for (int l = 0; l < nint; l++){
-            xx = 0.0;
 
-            for (int i = 0; i < nen; i++){
-                //xx=xx+shg[i][l]*xl[n+i-1]; //funciona apenas para linear (k=1)
-            }
+            xx = h/2*pt[l] + 0.5*(xl[l+1] + xl[l]);
+
             for (int j = 0; j < nen; j++){
-                //Fe(j) = Fe(j) + f(xx)*shg(j,l)*w(l)*h/2.; 
+                Fe[j] = Fe[j] + f(xx)*shg[j][l]*w[l]*h/2; 
+
                 for (int i = 0; i < nen; i++){
-                    // Me(i,j) = Me(i,j) + shg(i,l)*shg(j,l)*w(l)*h/2.;
+                    Me[i][j] = Me[i][j] + shg[i][l]*shg[j][l]*w[l]*h/2.;
                 }
+
             }
         }
+        // print_Matrix(Me,nen);
+        // print_Vector(Fe,nen);
+        // cout << "\n\n";
 
-        // for (int j = 0; j < nen; j++){
-        //     // F(n+j-1) = F(n+j-1) + Fe(j); %funciona apenas para linear (k=1)
-        //     for (int i = 0; i < nen; i++){
-        //         // M(n+i-1,n+j-1) = M(n+i-1,n+j-1) + Me(i,j); %funciona apenas para linear (k=1)
-        //     }
-        // }
+        for (int j = 0; j < nen; j++){
+            // if (j == nen-1) F[n+j] += F[j];
+            // else F[n+j] = F[j];
+            F[n*(nen-1)+j] += Fe[j];
+
+            for (int i = 0; i < nen; i++){
+                // if ((i == nen-1) && (j == nen-1) && (n!=nel-1)) {M[n+i][n+j] += Me[i][j]; cout << "OK\n";}
+                // else {M[n+i][n+j] = Me[i][j];}
+                M[n*(nen-1)+i][n*(nen-1)+j] += Me[i][j];
+            }
+        }
     }
-    // print_Matrix(M,np);
-    // print_Vector(F,np);
+    print_Matrix(M,np);
+    print_Vector(F,np);
+
+    
 
 
     return 0;
