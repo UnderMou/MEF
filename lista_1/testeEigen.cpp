@@ -6,15 +6,23 @@ using Eigen::VectorXd;
  
 int main()
 {
-  MatrixXd m = MatrixXd::Random(2,2);
-  m(0,0) = 10;
-  m(0,1) = 0;
-  m(1,0) = 0;
-  m(1,1) = 10;
+  MatrixXd A = MatrixXd::Random(3,3);
+  A(0,0) = 1;
+  A(0,1) = 2;
+  A(0,2) = 3;
+  A(1,0) = 4;
+  A(1,1) = 5;
+  A(1,2) = 6;
+  A(2,0) = 7;
+  A(2,1) = 8;
+  A(2,2) = 10;
 
-  //m = (m + MatrixXd::Constant(3,3,1.2)) * 50;
-  std::cout << "m =" << std::endl << m << std::endl;
-  VectorXd v(2);
-  v << 1, 2;
-  std::cout << "m * v =" << std::endl << m * v << std::endl;
+  VectorXd v(3);
+  v << 3, 3, 4;
+  
+  std::cout << "Here is the matrix A:\n" << A << std::endl;
+  std::cout << "Here is the vector b:\n" << v << std::endl;
+  Eigen::Vector3f x = A.colPivHouseholderQr().solve(v);
+  std::cout << "The solution is:\n" << x << std::endl;
 }
+

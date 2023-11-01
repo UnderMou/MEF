@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iomanip>
 
+#include <Eigen/Dense>
+
 #include "shl.cpp"
 #include "we.cpp"
 #include "pts.cpp"
@@ -44,13 +46,35 @@ float f(float xx){
     return sin(M_PI * xx);//*sin(M_PI * xx);
 }
 
+Eigen::MatrixXd convert_matrix(vector<vector<float>> M, int dim){
+    Eigen::MatrixXd M_eigen(dim,dim);
+
+    for (int i = 0; i < dim; i++){
+            for (int j = 0; j < dim; j++){
+                M_eigen(i,j) = M[i][j];
+            }
+    }
+
+    return M_eigen;
+}
+
+Eigen::MatrixXd convert_vector(vector<float> F, int dim){
+    Eigen::MatrixXd F_eigen(dim,1);
+
+    for (int j = 0; j < dim; j++){
+        F_eigen(j,0) = F[j];
+    }
+
+    return F_eigen;
+}
+
 int main(){
 
     // Defining the domain
     float a = -2.0;
     float b = 2.0;
 
-    int nel = 4;        // number of elements
+    int nel = 8;       // number of elements
     int k = 1;          // polynomial degree
     int np = k*nel+1;   // mesh total nodes
 
@@ -63,7 +87,7 @@ int main(){
     
     xl[0] = a;
     for (int i = 1; i < xl.size(); i++) xl[i] = xl[i-1] + h;
-    // for (int i = 0; i < xl.size(); i++) cout << xl[i] << "\n";
+    for (int i = 0; i < xl.size(); i++) cout << xl[i] << "\n";
 
 
     // Global matrix and source vector
@@ -105,22 +129,26 @@ int main(){
         pt = pts(nint);
         // print_Vector(pt,nint);
 
+        cout << "Element " << n << endl;
+        
         for (int l = 0; l < nint; l++){
+            
+            xx = h/2*pt[l] + 0.5*(xl[n*(nen-1) + 1] + xl[n*(nen-1)]);
 
-            xx = h/2*pt[l] + 0.5*(xl[l+1] + xl[l]);
+            //cout << xl[n*(nen) + l+1] << "||" << xl[n*(nen) + l] << endl;
 
             for (int j = 0; j < nen; j++){
                 Fe[j] = Fe[j] + f(xx)*shg[j][l]*w[l]*h/2; 
 
                 for (int i = 0; i < nen; i++){
-                    Me[i][j] = Me[i][j] + shg[i][l]*shg[j][l]*w[l]*h/2.;
+                    Me[i][j] = Me[i][j] + shg[i][l]*shg[j][l]*w[l]*h/2;
                 }
 
             }
         }
-        // print_Matrix(Me,nen);
-        // print_Vector(Fe,nen);
-        // cout << "\n\n";
+        print_Matrix(Me,nen);
+        print_Vector(Fe,nen);
+        cout << "\n\n";
 
         for (int j = 0; j < nen; j++){
             // if (j == nen-1) F[n+j] += F[j];
@@ -138,7 +166,16 @@ int main(){
     print_Vector(F,np);
 
     
+    Eigen::MatrixXd M_eigen(np,np);
+    M_eigen = convert_matrix(M, np);
+    std::cout << "Here is the matrix M_eigen:\n" << M_eigen << std::endl;
 
+    Eigen::VectorXd F_eigen(np);
+    F_eigen = convert_vector(F, np);
+    std::cout << "Here is the vector F_eigen:\n" << F_eigen << std::endl;
+
+    Eigen::VectorXd u_eigen = M_eigen.colPivHouseholderQr().solve(F_eigen);
+    std::cout << "The solution is:\n" << u_eigen << std::endl;
 
     return 0;
 }
