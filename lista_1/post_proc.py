@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 
 def f(x):
+    # return np.multiply(np.sin(np.pi*x),np.sin(np.pi*x))
     return np.sin(np.pi*x)
 
 def custom_sort(s):
@@ -35,3 +36,11 @@ for file in filtered_files:
     plt.legend()
     plt.savefig('plot'+file[:-4]+'.pdf', dpi=300, bbox_inches='tight')
     plt.close()
+
+N = np.array([4,8,16,32,64,128,256])
+N = np.divide(4,N)
+L2error = np.array([1.08884, 0.219947, 0.0525804, 0.0129298, 0.00321801, 0.000803316, 0.000200908])
+
+plt.plot(-np.log(N),np.log(L2error),linestyle='-',marker='o')
+plt.xlabel("$$")
+plt.show()
