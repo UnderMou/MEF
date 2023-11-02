@@ -78,7 +78,7 @@ void projL2_analisys(int number_el){
     float a = -2.0;
     float b = 2.0;
     
-    int k = 2;          // polynomial degree
+    int k = 4;          // polynomial degree
     int np = k*nel+1;   // mesh total nodes
 
     int nen = k+1;      // number of element nodes
@@ -105,8 +105,8 @@ void projL2_analisys(int number_el){
     vector<vector<float>> Me(nen, vector<float>(nen));
     Me = init_Matrix(nen,nen);
 
-    vector<vector<float>> shg(nen, vector<float>(nint));
-    shg = init_Matrix(nen,nint);
+    vector<vector<float>> shg(nint, vector<float>(nint));
+    shg = init_Matrix(nint,nint);
 
     vector<float> Fe(nen);
     Fe = init_F(nen);
@@ -218,10 +218,9 @@ void projL2_analisys(int number_el){
     std::cout << "CSV file written successfully." << std::endl;
 }
 
-
 int main(){
 
-    const int size = 9; 
+    const int size = 7; 
     int numb_el;
 
     // Initialize the array (optional)

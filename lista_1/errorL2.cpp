@@ -1,12 +1,45 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+#include <fstream>
+#include <string>
 
+#include "shl.cpp"
+#include "we.cpp"
+#include "pts.cpp"
+
+using namespace std;
+
+vector<float> init_F(int n){
+    vector<float> F(n);
+    for (int i = 0; i < n; i++) F[i] = 0.0;
+    return F;
+}
 
 int main(){
+    const int size = 7; 
+
+    stringstream ss;
+    ss << "errorL2.csv";
+    string FileName = ss.str();
+
+    ofstream csvFile(FileName);
+    if (!csvFile.is_open()) {
+        std::cerr << "Error opening the new CSV file." << std::endl;
+        //return 1; // Return an error code
+    }
+
+
     for (int i = 2; i < size; ++i) {
+
+        float a = -2.0;
+        float b = 2.0;
 
         int numb_el = pow(2,i); 
         int nel = numb_el;  // number of elements
         
-        int k = 2;          // polynomial degree
+        int k = 4;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -29,7 +62,7 @@ int main(){
         }
 
         
-        std::vector<float> fields_x(pow(2,i)+1);
+        std::vector<float> fields_x(np);
         std::string line_x;
         std::getline(file, line_x);
         std::stringstream ss_x(line_x);
@@ -41,7 +74,7 @@ int main(){
             j++;
         }
 
-        // for (int j = 0; j < pow(2,i)+1; j++) {
+        // for (int j = 0; j < np; j++) {
         //     std::cout << fields_x[j] << " ";
         // }
         // std::cout << std::endl;
@@ -52,7 +85,7 @@ int main(){
 
 
 
-        std::vector<float> fields_u(pow(2,i)+1);
+        std::vector<float> fields_u(np);
         std::string line_u;
         std::getline(file, line_u);
         std::stringstream ss_u(line_u);
@@ -65,7 +98,7 @@ int main(){
         }
 
 
-        // for (int j = 0; j < pow(2,i)+1; j++) {
+        // for (int j = 0; j < np; j++) {
         //     std::cout << fields_u[j] << " ";
         // }
         // std::cout << std::endl;
@@ -77,7 +110,7 @@ int main(){
 
 
 
-        std::vector<float> fields_uTrue(pow(2,i)+1);
+        std::vector<float> fields_uTrue(np);
         std::string line_uTrue;
         std::getline(file, line_uTrue);
         std::stringstream ss_uTrue(line_uTrue);
@@ -89,7 +122,7 @@ int main(){
             j++;
         }
 
-        // for (int j = 0; j < pow(2,i)+1; j++) {
+        // for (int j = 0; j < np; j++) {
         //     std::cout << fields_uTrue[j] << " ";
         // }
         // std::cout << std::endl;
@@ -99,21 +132,27 @@ int main(){
 
 
         float erul2 = 0.0;
-        for (int j = 0; j < nel-1; j++) {
+        for (int j = 0; j < nel; j++) {
             float eru = 0.0;
 
             for (int l = 0; l < nint-1; l++) {
                 // std::cout << "f(xx) - uh = " << fields_uTrue[j] << " - " << fields_u[j] << endl;
                 // cout << w[l] << endl;
-                eru = eru + pow( fields_uTrue[j+l] - fields_u[j+l] ,2)*w[l]*h/2;
+                eru = eru + pow( fields_uTrue[j*(nen-1)+l] - fields_u[j*(nen-1)+l] ,2)*w[l]*h/2;
             }
 
             erul2 = erul2 + eru;
         }
         erul2 = sqrt(erul2);
-        cout << "Error L2 norm = " << erul2 << endl;
-
+        //cout << "Error L2 norm = " << erul2 << endl;
         
+        csvFile << erul2;
+        if (i < size - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }    
         
     } 
+    csvFile.close();
+
+    return 0;
 }
