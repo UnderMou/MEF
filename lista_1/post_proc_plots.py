@@ -3,8 +3,8 @@ import os
 import matplotlib.pyplot as plt
 
 def f(x):
-    # return np.multiply(np.sin(np.pi*x),np.sin(np.pi*x))
-    return np.sin(np.pi*x)
+    return np.multiply(np.sin(np.pi*x),np.sin(np.pi*x))
+    # return np.sin(np.pi*x)
 
 def custom_sort(s):
     # Extract the integer part from the string, or use 0 if there are no integers
