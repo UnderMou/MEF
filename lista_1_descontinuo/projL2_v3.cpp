@@ -78,7 +78,7 @@ void projL2_analisys(int number_el){
     double a = -2.0;
     double b = 2.0;
     
-    int k = 3;          // polynomial degree
+    int k = 4;          // polynomial degree
     int np = k*nel+nel;   // mesh total nodes
 
     int nen = k+1;      // number of element nodes
@@ -218,13 +218,13 @@ void projL2_analisys(int number_el){
         }
     }
     csvFile << endl;
-    // for (int i = 0; i < np; ++i) {
-    //     csvFile << f(xl[i]);
-    //     if (i < np - 1) {
-    //         csvFile << ","; // Use a comma as a delimiter
-    //     }
-    // }
-    // csvFile << "\n"; // Add a newline character to separate rows
+    for (int i = 0; i < np; ++i) {
+        csvFile << f(xl[i]);
+        if (i < np - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }
+    }
+    csvFile << "\n"; // Add a newline character to separate rows
 
     // Close the CSV file
     csvFile.close();

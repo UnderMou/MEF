@@ -27,7 +27,7 @@ for file in filtered_files:
     plt.figure()
     plt.grid(True)
 
-    plt.plot(x,u,c = "b",label="$u(x) = sin(\pi x)$")
+    plt.plot(x,u,c = "b",label="$u(x) = sin(\pi x)*sin(\pi x)$")
     plt.scatter(x_projL2,u_projL2,s=5,c = "r",label="Projeção $L_2$", zorder=2)
     
     
