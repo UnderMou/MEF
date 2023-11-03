@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <cfloat>
 
 #include "shl_v2.cpp"
 #include "we_v2.cpp"
@@ -31,7 +32,7 @@ int main(){
         int numb_el = pow(2,i); 
         int nel = numb_el;  // number of elements
         
-        int k = 2;          // polynomial degree
+        int k = 4;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -122,6 +123,7 @@ int main(){
         file.close();
 
 
+        // ERRO NORMA L2
 
         double erul2 = 0.0;
         for (int j = 0; j < nel; j++) {
@@ -136,8 +138,26 @@ int main(){
             erul2 = erul2 + eru;
         }
         erul2 = sqrt(erul2);
-        //cout << "Error L2 norm = " << erul2 << endl;
+
+
+
+        // // ERRO NORMA INFTY
+
+        // double erul2 = 0.0;
+        // double eru = 0.0;
+
+        // for (int j = 0; j < np; j++) {
+            
+        //     eru = abs(fields_uTrue[j] - fields_u[j]);
+        //     if(eru > erul2){
+        //         erul2 = eru;
+        //     }
+            
+        // }
         
+
+
+        // SALVAR ERRO
         erros[i-2] = erul2;
         
     } 

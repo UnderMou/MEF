@@ -2,6 +2,7 @@ from fileinput import filename
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 def custom_sort(s):
     # Extract the integer part from the string, or use 0 if there are no integers
@@ -24,6 +25,14 @@ L2error = np.genfromtxt('errorL2.csv', delimiter=',', max_rows=1)
 
 x = -np.log(h)
 y = np.log(L2error)
+
+model = LinearRegression()
+x_reshaped = [[val] for val in x]
+model.fit(x_reshaped[3:], y[3:].tolist())
+slope = model.coef_[0]
+slope = abs(slope)
+print(f"Linear regression slope (angular coefficient): {slope}")
+
 alpha = abs(y[-1] - y[-2]) / abs(x[-1] - x[-2])
 print(alpha)
 
