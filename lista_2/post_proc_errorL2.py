@@ -16,19 +16,21 @@ filtered_files = [filename for filename in file_list if filename.startswith('dat
 filtered_files = sorted(filtered_files, key=custom_sort) 
 N = np.array([int(filename[5:9]) for filename in filtered_files])
 
-a = -2.0
-b = 2.0
+a = 0.0
+b = 1.5
 h = np.array([abs(b-a)/n for n in N])
 
 
 L2error = np.genfromtxt('errorL2.csv', delimiter=',', max_rows=1)
+print(N,h)
+print(L2error)
 
 x = -np.log(h)
 y = np.log(L2error)
 
 model = LinearRegression()
 x_reshaped = [[val] for val in x]
-model.fit(x_reshaped[3:], y[3:].tolist())
+model.fit(x_reshaped[0:], y[0:].tolist())
 slope = model.coef_[0]
 slope = abs(slope)
 print(f"Linear regression slope (angular coefficient): {slope}")

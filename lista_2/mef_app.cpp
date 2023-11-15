@@ -50,6 +50,11 @@ double f(double xx){
     // return 1.0;
 }
 
+double u_exact(double xx){
+    return sin(M_PI * xx);
+    // return 1.0;
+}
+
 Eigen::MatrixXd convert_matrix(vector<vector<double>> M, int dim){
     Eigen::MatrixXd M_eigen(dim,dim);
 
@@ -84,10 +89,10 @@ void mef_analisys(int number_el){
     // Dirichlet
     double BC_h = sin(M_PI*b);
     // Neumann
-    double BC_g = M_PI;
+    double BC_g = -M_PI;
     cout << "Dirichlet h = " << BC_h << " | Neumann g = " << BC_g << endl;
     
-    int k = 2;          // polynomial degree
+    int k = 1;          // polynomial degree
     int np = k*nel+1;   // mesh total nodes
 
     int nen = k+1;      // number of element nodes
@@ -178,13 +183,13 @@ void mef_analisys(int number_el){
             }
         }
     }
-    print_Matrix(K,np);
-    print_Vector(F,np);
+    // print_Matrix(K,np);
+    // print_Vector(F,np);
 
 
     // Boundary conditions
     // Neumann
-    F[0] += -BC_g;
+    F[0] += BC_g;
 
     // Dirichlet
     int idx = np - nint;
@@ -201,8 +206,8 @@ void mef_analisys(int number_el){
     }
 
 
-    print_Matrix(K,np);
-    print_Vector(F,np);
+    // print_Matrix(K,np);
+    // print_Vector(F,np);
     
     Eigen::MatrixXd K_eigen(np,np);
     K_eigen = convert_matrix(K, np);
@@ -226,6 +231,10 @@ void mef_analisys(int number_el){
         //return 1; // Return an error code
     }
 
+    // Set precision to output all decimals
+    csvFile << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
+
     // Write data to the CSV file
     for (int i = 0; i < np; ++i) {
         csvFile << xl[i];
@@ -240,29 +249,30 @@ void mef_analisys(int number_el){
             csvFile << ","; // Use a comma as a delimiter
         }
     }
-    // csvFile << endl;
-    // for (int i = 0; i < np; ++i) {
-    //     csvFile << f(xl[i]);
-    //     if (i < np - 1) {
-    //         csvFile << ","; // Use a comma as a delimiter
-    //     }
-    // }
+    csvFile << endl;
+    for (int i = 0; i < np; ++i) {
+        csvFile << u_exact(xl[i]);
+        if (i < np - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }
+    }
     csvFile << "\n"; // Add a newline character to separate rows
 
     // Close the CSV file
     csvFile.close();
 
     std::cout << "CSV file written successfully." << std::endl;
+    cout << k << endl;
 }
 
 int main(){
 
-    const int size = 2; 
+    const int size = 6; 
     int numb_el;
 
     // Initialize the array (optional)
-    for (int i = 1; i < size; ++i) {
-        numb_el = pow(4,i);
+    for (int i = 2; i < size; ++i) {
+        numb_el = pow(2,i);
         cout << "Runing nel = " << numb_el << "\n";
         mef_analisys(numb_el);
     }    

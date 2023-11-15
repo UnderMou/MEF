@@ -19,20 +19,21 @@ vector<double> init_F(int n){
 }
 
 int main(){
-    const int size = 8; 
+    const int size = 6; 
 
     vector<double> erros(size-2);
+    vector<double> derros(size-2);
 
 
     for (int i = 2; i < size; ++i) {
 
-        double a = -2.0;
-        double b = 2.0;
+        double a = 0.0;
+        double b = 1.5;
 
         int numb_el = pow(2,i); 
         int nel = numb_el;  // number of elements
         
-        int k = 4;          // polynomial degree
+        int k = 1;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -154,13 +155,33 @@ int main(){
         //     }
             
         // }
+
+
+        // // ERRO NORMA L2 - DERIVADA
+
+        // double derul2 = 0.0;
+        // for (int j = 0; j < nel; j++) {
+        //     double deru = 0.0;
+
+        //     for (int l = 0; l < nint-1; l++) {
+        //         // std::cout << "f(xx) - uh = " << fields_uTrue[j] << " - " << fields_u[j] << endl;
+        //         // cout << w[l] << endl;
+        //         deru = deru + pow( fields_uTrue[j*(nen-1)+l] - fields_u[j*(nen-1)+l] ,2)*w[l]*h/2;
+        //     }
+
+        //     derul2 = derul2 + deru;
+        // }
+        // derul2 = sqrt(derul2);
         
 
 
         // SALVAR ERRO
         erros[i-2] = erul2;
+        // derros[i-2] = derul2;
         
     } 
+
+    // ESCREVE ERRO 
 
     stringstream ss;
     ss << "errorL2.csv";
@@ -179,6 +200,26 @@ int main(){
         } 
     }
     csvFile.close();
+
+    // ESCREVE ERRO DERIVADA
+    
+    // stringstream ss;
+    // ss << "d_errorL2.csv";
+    // string FileName2 = ss.str();
+
+    // ofstream csvFile(FileName2);
+    // if (!csvFile.is_open()) {
+    //     std::cerr << "Error opening the new CSV file." << std::endl;
+    //     //return 1; // Return an error code
+    // }
+
+    // for (int i = 0; i < size-2; i++) {
+    //     csvFile << erros[i];
+    //     if (i < size - 3) {
+    //         csvFile << ","; // Use a comma as a delimiter
+    //     } 
+    // }
+    // csvFile.close();
 
     return 0;
 }
