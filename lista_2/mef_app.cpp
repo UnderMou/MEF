@@ -46,7 +46,7 @@ void print_Vector(vector<double> F, int dim){
 }
 
 double f(double xx){
-    return -M_PI*M_PI*sin(M_PI * xx);
+    return M_PI*M_PI*sin(M_PI * xx);
     // return 1.0;
 }
 
@@ -87,7 +87,7 @@ void mef_analisys(int number_el){
     double BC_g = M_PI;
     cout << "Dirichlet h = " << BC_h << " | Neumann g = " << BC_g << endl;
     
-    int k = 1;          // polynomial degree
+    int k = 2;          // polynomial degree
     int np = k*nel+1;   // mesh total nodes
 
     int nen = k+1;      // number of element nodes
@@ -184,7 +184,7 @@ void mef_analisys(int number_el){
 
     // Boundary conditions
     // Neumann
-    F[0] += BC_g;
+    F[0] += -BC_g;
 
     // Dirichlet
     int idx = np - nint;
@@ -194,7 +194,7 @@ void mef_analisys(int number_el){
         idx += i;
         //cout << idx << endl;
         //cout << K[idx][np-1]<< endl;
-        F[idx] += (-1.0)*BC_h*K[idx][np-1]; 
+        F[idx] += -BC_h*K[idx][np-1]; 
         K[np-1][idx] = 0.0;
         K[idx][np-1] = 0.0;
 
@@ -262,7 +262,7 @@ int main(){
 
     // Initialize the array (optional)
     for (int i = 1; i < size; ++i) {
-        numb_el = pow(16,i);
+        numb_el = pow(4,i);
         cout << "Runing nel = " << numb_el << "\n";
         mef_analisys(numb_el);
     }    
