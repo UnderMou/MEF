@@ -184,56 +184,62 @@ void mef_analisys(int number_el){
 
     // Boundary conditions
     // Neumann
-    K[0][0] += BC_g;
+    F[0] += BC_g;
 
     // Dirichlet
     int idx = np - nint;
+    F[np-1] = BC_h;
+    K[np-1][np-1] = 1.0;
     for(int i = 0; i < nint-1; i++){
         idx += i;
         //cout << idx << endl;
-        
+        //cout << K[idx][np-1]<< endl;
+        F[idx] += (-1.0)*BC_h*K[idx][np-1]; 
+        K[np-1][idx] = 0.0;
+        K[idx][np-1] = 0.0;
+
     }
 
 
     print_Matrix(K,np);
     print_Vector(F,np);
     
-    // Eigen::MatrixXd M_eigen(np,np);
-    // M_eigen = convert_matrix(M, np);
-    // // std::cout << "Here is the matrix M_eigen:\n" << M_eigen << std::endl;
+    Eigen::MatrixXd K_eigen(np,np);
+    K_eigen = convert_matrix(K, np);
+    // std::cout << "Here is the matrix M_eigen:\n" << M_eigen << std::endl;
 
-    // Eigen::VectorXd F_eigen(np);
-    // F_eigen = convert_vector(F, np);
-    // // std::cout << "Here is the vector F_eigen:\n" << F_eigen << std::endl;
+    Eigen::VectorXd F_eigen(np);
+    F_eigen = convert_vector(F, np);
+    // std::cout << "Here is the vector F_eigen:\n" << F_eigen << std::endl;
 
-    // Eigen::VectorXd u_eigen = M_eigen.colPivHouseholderQr().solve(F_eigen);
-    // // std::cout << "The solution is:\n" << u_eigen << std::endl;
+    Eigen::VectorXd u_eigen = K_eigen.colPivHouseholderQr().solve(F_eigen);
+    // std::cout << "The solution is:\n" << u_eigen << std::endl;
 
 
-    // stringstream ss;
-    // ss << "data_" << std::setw(4) << std::setfill('0') << nel << ".csv";
-    // string FileName = ss.str();
+    stringstream ss;
+    ss << "data_" << std::setw(4) << std::setfill('0') << nel << ".csv";
+    string FileName = ss.str();
 
-    // ofstream csvFile(FileName);
-    // if (!csvFile.is_open()) {
-    //     std::cerr << "Error opening the new CSV file." << std::endl;
-    //     //return 1; // Return an error code
-    // }
+    ofstream csvFile(FileName);
+    if (!csvFile.is_open()) {
+        std::cerr << "Error opening the new CSV file." << std::endl;
+        //return 1; // Return an error code
+    }
 
-    // // Write data to the CSV file
-    // for (int i = 0; i < np; ++i) {
-    //     csvFile << xl[i];
-    //     if (i < np - 1) {
-    //         csvFile << ","; // Use a comma as a delimiter
-    //     }
-    // }
-    // csvFile << endl;
-    // for (int i = 0; i < np; ++i) {
-    //     csvFile << u_eigen(i);
-    //     if (i < np - 1) {
-    //         csvFile << ","; // Use a comma as a delimiter
-    //     }
-    // }
+    // Write data to the CSV file
+    for (int i = 0; i < np; ++i) {
+        csvFile << xl[i];
+        if (i < np - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }
+    }
+    csvFile << endl;
+    for (int i = 0; i < np; ++i) {
+        csvFile << u_eigen(i);
+        if (i < np - 1) {
+            csvFile << ","; // Use a comma as a delimiter
+        }
+    }
     // csvFile << endl;
     // for (int i = 0; i < np; ++i) {
     //     csvFile << f(xl[i]);
@@ -241,12 +247,12 @@ void mef_analisys(int number_el){
     //         csvFile << ","; // Use a comma as a delimiter
     //     }
     // }
-    // csvFile << "\n"; // Add a newline character to separate rows
+    csvFile << "\n"; // Add a newline character to separate rows
 
-    // // Close the CSV file
-    // csvFile.close();
+    // Close the CSV file
+    csvFile.close();
 
-    // std::cout << "CSV file written successfully." << std::endl;
+    std::cout << "CSV file written successfully." << std::endl;
 }
 
 int main(){
@@ -256,7 +262,7 @@ int main(){
 
     // Initialize the array (optional)
     for (int i = 1; i < size; ++i) {
-        numb_el = pow(4,i);
+        numb_el = pow(16,i);
         cout << "Runing nel = " << numb_el << "\n";
         mef_analisys(numb_el);
     }    

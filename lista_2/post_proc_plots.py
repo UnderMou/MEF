@@ -3,15 +3,15 @@ import os
 import matplotlib.pyplot as plt
 
 def f(x):
-    return np.multiply(np.sin(np.pi*x),np.sin(np.pi*x))
-    # return np.sin(np.pi*x)
+    # return np.multiply(np.sin(np.pi*x),np.sin(np.pi*x))
+    return np.sin(np.pi*x)
 
 def custom_sort(s):
     # Extract the integer part from the string, or use 0 if there are no integers
     integer_part = int(''.join(filter(str.isdigit, s))) if any(char.isdigit() for char in s) else 0
     return (integer_part, s)
 
-x = np.linspace(-2,2,1024)
+x = np.linspace(0.0,1.5,1024)
 u = f(x)
 
 file_list = os.listdir("./")
@@ -27,8 +27,8 @@ for file in filtered_files:
     plt.figure()
     plt.grid(True)
 
-    plt.plot(x,u,c = "b",label="$u(x) = sin(\pi x)*sin(\pi x)$")
-    plt.scatter(x_projL2,u_projL2,s=5,c = "r",label="Projeção $L_2$", zorder=2)
+    plt.plot(x,u,c = "b",label="$u(x) = sin(\pi x)$")
+    plt.scatter(x_projL2,u_projL2,s=5,c = "r",label="MEF", zorder=2)
     
     
     plt.xlabel("x")
