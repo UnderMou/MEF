@@ -68,6 +68,10 @@ int main(){
             j++;
         }
 
+        // Set precision for printing
+        std::cout << std::fixed << std::setprecision(16);  // Adjust precision as needed
+        //std::cout << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
         // for (int j = 0; j < np; j++) {
         //     std::cout << fields_x[j] << " ";
         // }
@@ -92,10 +96,11 @@ int main(){
         }
 
 
-        // for (int j = 0; j < np; j++) {
-        //     std::cout << fields_u[j] << " ";
-        // }
-        // std::cout << std::endl;
+        for (int j = 0; j < np; j++) {
+            std::cout << fields_u[j] << " ";
+        }
+        std::cout << std::endl;
+        std::cout << std::endl;
 
         
 

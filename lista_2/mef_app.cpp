@@ -89,7 +89,7 @@ void mef_analisys(int number_el){
     // Dirichlet
     double BC_h = sin(M_PI*b);
     // Neumann
-    double BC_g = -M_PI;
+    double BC_g = -M_PI*cos(M_PI*a);
     cout << "Dirichlet h = " << BC_h << " | Neumann g = " << BC_g << endl;
     
     int k = 1;          // polynomial degree
@@ -202,7 +202,6 @@ void mef_analisys(int number_el){
         F[idx] += -BC_h*K[idx][np-1]; 
         K[np-1][idx] = 0.0;
         K[idx][np-1] = 0.0;
-
     }
 
 
@@ -232,7 +231,8 @@ void mef_analisys(int number_el){
     }
 
     // Set precision to output all decimals
-    csvFile << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+    // csvFile << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+    csvFile << std::fixed << std::setprecision(16);  // Adjust precision as needed
 
 
     // Write data to the CSV file
