@@ -30,8 +30,8 @@ for i in range(len(filtered_dir)):
     
     N = np.array([int(filename[5:9]) for filename in filtered_files])
     
-    a = -2.0
-    b = 2.0
+    a = 0.0
+    b = 1.0
     h = np.array([abs(b-a)/n for n in N])
 
 
@@ -43,7 +43,7 @@ for i in range(len(filtered_dir)):
     model = LinearRegression()
     x_reshaped = [[val] for val in x]
 
-    h2off = 2
+    h2off = 0
 
     model.fit(x_reshaped[h2off:], y[h2off:].tolist())
     slope = model.coef_[0]

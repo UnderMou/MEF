@@ -28,12 +28,12 @@ int main(){
     for (int i = 2; i < size; ++i) {
 
         double a = 0.0;
-        double b = 1.5;
+        double b = 1.0;
 
         int numb_el = pow(2,i); 
         int nel = numb_el;  // number of elements
         
-        int k = 1;          // polynomial degree
+        int k = 2;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -69,7 +69,7 @@ int main(){
         }
 
         // Set precision for printing
-        std::cout << std::fixed << std::setprecision(16);  // Adjust precision as needed
+        // std::cout << std::fixed << std::setprecision(16);  // Adjust precision as needed
         //std::cout << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 
         // for (int j = 0; j < np; j++) {
@@ -96,11 +96,11 @@ int main(){
         }
 
 
-        for (int j = 0; j < np; j++) {
-            std::cout << fields_u[j] << " ";
-        }
-        std::cout << std::endl;
-        std::cout << std::endl;
+        // for (int j = 0; j < np; j++) {
+        //     std::cout << fields_u[j] << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << std::endl;
 
         
 

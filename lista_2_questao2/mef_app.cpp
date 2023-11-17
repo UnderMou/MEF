@@ -235,7 +235,7 @@ void mef_analisys(int number_el){
 
     // Set precision to output all decimals
     // csvFile << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
-    csvFile << std::fixed << std::setprecision(16);  // Adjust precision as needed
+    // csvFile << std::fixed << std::setprecision(16);  // Adjust precision as needed
 
 
     // Write data to the CSV file
@@ -270,7 +270,7 @@ void mef_analisys(int number_el){
 
 int main(){
 
-    const int size = 3; 
+    const int size = 6; 
     int numb_el;
 
     // Initialize the array (optional)

@@ -17,7 +17,7 @@ filtered_files = sorted(filtered_files, key=custom_sort)
 N = np.array([int(filename[5:9]) for filename in filtered_files])
 
 a = 0.0
-b = 1.5
+b = 1.0
 h = np.array([abs(b-a)/n for n in N])
 
 
