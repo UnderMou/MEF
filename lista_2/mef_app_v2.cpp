@@ -310,7 +310,7 @@ int main(){
         double BC_g = -M_PI*cos(M_PI*a);
         cout << "Dirichlet h = " << BC_h << " | Neumann g = " << BC_g << endl;
         
-        int k = 3;          // polynomial degree
+        int k = 4;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -531,6 +531,37 @@ int main(){
             erul2 = erul2 + eru;
         }
         erul2 = sqrt(erul2);
+
+
+
+
+
+
+
+        // double erul2 = 0.0;
+        
+        // for (int j = 0; j < nel; j++) {
+        //     double eru = 0.0;
+
+        //     for (int l = 0; l < nint; l++) {
+
+        //         double uh = 0.0;
+
+        //         xx = 0.0;
+
+        //         for (int i = 0; i < nen; i++){
+        //             uh += shg[i][l]*u_eigen(i);
+        //             xx += shg[i][l]*xl[i];
+        //         }
+                
+        //         eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
+        //     }
+
+        //     erul2 = erul2 + eru;
+        // }
+        // erul2 = sqrt(erul2);
+
+
 
 
 
