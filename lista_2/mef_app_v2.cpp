@@ -290,13 +290,17 @@ double interpolate_uh(double xx, vector<double> xl, Eigen::VectorXd u_eigen){
 
 int main(){
 
-    const int size = 9; 
-    vector<double> erros(size-2);
+    int first = 0;
+
+    const int size = 2; 
+    vector<double> erros(size-first);
+
+    
 
     // Initialize the array (optional)
-    for (int i = 2; i < size; ++i) {
+    for (int kk = first; kk < size; ++kk) {
 
-        int nel = pow(2,i); // number of elements
+        int nel = pow(2,kk); // number of elements
         cout << "Runing nel = " << nel << "\n";
 
         // Defining the domain
@@ -323,7 +327,7 @@ int main(){
         vector<double> xl(np,0.0);
         
         xl[0] = a;
-        for (int i = 1; i < xl.size(); i++) xl[i] = xl[i-1] + h/(nen-1);
+        for (int ii = 1; ii < xl.size(); ii++) xl[ii] = xl[ii-1] + h/(nen-1);
         // for (int i = 0; i < xl.size(); i++) cout << xl[i] << "\n";
 
 
@@ -376,7 +380,12 @@ int main(){
             
             for (int l = 0; l < nint; l++){
                 
-                xx = h/2*pt[l] + 0.5*(xl[n*(nen-1) + nen-1] + xl[n*(nen-1)]);
+                //xx = h/2*pt[l] + 0.5*(xl[n*(nen-1) + nen-1] + xl[n*(nen-1)]);
+                xx = 0.0;
+
+                for (int i = 0; i < nen; i++){
+                    xx += shg[i][l]*xl[n*(nen-1) + i];
+                }
 
                 for (int j = 0; j < nen; j++){
                     Fe[j] = Fe[j] + f(xx)*shg[j][l]*w[l]*h/2.0; 
@@ -425,7 +434,7 @@ int main(){
         // }
 
         double kappa_a = 0.0;
-        double kappa_b = 1e6;
+        double kappa_b = 1e9;
         double g_a = 0.0;
         double g_b = BC_h;
         double q_a = BC_g;
@@ -509,53 +518,24 @@ int main(){
 
         // ERRO NORMA L2
 
-        double erul2 = 0.0;
-
-        double uh;
-        
-        for (int j = 0; j < nel; j++) {
-            double eru = 0.0;
-
-            for (int l = 0; l < nint; l++) {
-
-                xx = h/2*pt[l] + 0.5*(xl[j*(nen-1) + nen-1] + xl[j*(nen-1)]);
-
-                uh = interpolate_uh(xx, xl, u_eigen);
-                
-                cout << " | u_exact(xx) = " << u_exact(xx) << endl;
-                
-                eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
-            }
-            cout << endl;
-
-            erul2 = erul2 + eru;
-        }
-        erul2 = sqrt(erul2);
-
-
-
-
-
-
-
         // double erul2 = 0.0;
+
+        // double uh;
         
         // for (int j = 0; j < nel; j++) {
         //     double eru = 0.0;
 
         //     for (int l = 0; l < nint; l++) {
 
-        //         double uh = 0.0;
+        //         xx = h/2*pt[l] + 0.5*(xl[j*(nen-1) + nen-1] + xl[j*(nen-1)]);
 
-        //         xx = 0.0;
-
-        //         for (int i = 0; i < nen; i++){
-        //             uh += shg[i][l]*u_eigen(i);
-        //             xx += shg[i][l]*xl[i];
-        //         }
+        //         uh = interpolate_uh(xx, xl, u_eigen);
+                
+        //         cout << " | u_exact(xx) = " << u_exact(xx) << endl;
                 
         //         eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
         //     }
+        //     cout << endl;
 
         //     erul2 = erul2 + eru;
         // }
@@ -565,7 +545,40 @@ int main(){
 
 
 
-        erros[i-2] = erul2;
+
+
+        double erul2 = 0.0;
+
+        cout << nen << endl;
+        cout << nint << endl;
+        cout << nel << endl;
+        
+        for (int j = 0; j < nel; j++) {
+            double eru = 0.0;
+
+            for (int l = 0; l < nint; l++) {
+
+                double uh = 0.0;
+
+                xx = 0.0;
+
+                for (int i = 0; i < nen; i++){
+                    uh += shg[i][l]*u_eigen(j*(nen-1)  +i);
+                    xx += shg[i][l]*xl[j*(nen-1) + i];
+                }
+                
+                eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
+            }
+
+            erul2 = erul2 + eru;
+        }
+        erul2 = sqrt(erul2);
+
+
+
+
+
+        erros[kk-first] = erul2;
 
 
     } 
@@ -593,9 +606,9 @@ int main(){
 
     // csvFile << std::fixed << std::setprecision(16);
 
-    for (int i = 0; i < size-2; i++) {
+    for (int i = 0; i < size-first; i++) {
         csvFile << erros[i];
-        if (i < size - 3) {
+        if (i < (size - first - 1)) {
             csvFile << ","; // Use a comma as a delimiter
         } 
     }
