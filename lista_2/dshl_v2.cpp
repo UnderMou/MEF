@@ -54,7 +54,7 @@ vector<vector<double>> dshl(int nen, int nint){
         if (nen == 4){
             dshg[0][l] = 0.0625 + 1.125*t - 1.68758*pow(t,2);
             dshg[1][l] = -1.6875 - 1.125*t + 5.0625*pow(t,2);
-            dshg[2][l] = 1.6875 - 1.125*t + 5.0625*pow(t,2);
+            dshg[2][l] = 1.6875 - 1.125*t - 5.0625*pow(t,2);
             dshg[3][l] = -0.0625 + 1.125*t + 1.68758*pow(t,2);
         }
 

@@ -267,9 +267,30 @@ void mef_analisys(int number_el){
 }
 
 
+double interpolate_uh(double xx, vector<double> xl, Eigen::VectorXd u_eigen){
+
+    int i = 0;
+    while (xx > xl[i]){
+        i++;
+    }
+
+    double x1, x2, y1, y2;
+    x1 = xl[i-1];
+    x2 = xl[i];
+    cout << " xx = " << xx << " | [" << x1 << "," << x2 << "] == ";
+
+    y1 = u_eigen(i-1);
+    y2 = u_eigen(i);
+    double uh =  y1 + ((xx-x1) * (y2-y1))/(x2-x1);
+
+    cout << " uh = " << uh << " | [" << y1 << "," << y2 << "]";    
+
+    return uh;
+}
+
 int main(){
 
-    const int size = 6; 
+    const int size = 9; 
     vector<double> erros(size-2);
 
     // Initialize the array (optional)
@@ -289,13 +310,15 @@ int main(){
         double BC_g = -M_PI*cos(M_PI*a);
         cout << "Dirichlet h = " << BC_h << " | Neumann g = " << BC_g << endl;
         
-        int k = 1;          // polynomial degree
+        int k = 3;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
         int nint = k+1;     // number of integration points
 
         double h = (b-a)/nel;    // element length
+
+        // cout << "h = " << h << endl;
 
         vector<double> xl(np,0.0);
         
@@ -385,21 +408,34 @@ int main(){
 
 
         // Boundary conditions
-        // Neumann
-        F[0] += BC_g;
+        // // Neumann
+        // F[0] += BC_g;
 
-        // Dirichlet
-        int idx = np - nint;
-        F[np-1] = BC_h;
-        K[np-1][np-1] = 1.0;
-        for(int i = 0; i < nint-1; i++){
-            idx += i;
-            //cout << idx << endl;
-            //cout << K[idx][np-1]<< endl;
-            F[idx] += -BC_h*K[idx][np-1]; 
-            K[np-1][idx] = 0.0;
-            K[idx][np-1] = 0.0;
-        }
+        // // Dirichlet
+        // int idx = np - nint;
+        // F[np-1] = BC_h;
+        // K[np-1][np-1] = 1.0;
+        // for(int i = 0; i < nint-1; i++){
+        //     idx += i;
+        //     //cout << idx << endl;
+        //     //cout << K[idx][np-1]<< endl;
+        //     F[idx] += -BC_h*K[idx][np-1]; 
+        //     K[np-1][idx] = 0.0;
+        //     K[idx][np-1] = 0.0;
+        // }
+
+        double kappa_a = 0.0;
+        double kappa_b = 1e6;
+        double g_a = 0.0;
+        double g_b = BC_h;
+        double q_a = BC_g;
+        double q_b = 0.0;
+
+        K[0][0] += kappa_a;
+        K[np-1][np-1] += kappa_b;
+
+        F[0] += kappa_a*g_a + q_a;
+        F[np-1] += kappa_b*g_b + q_b;
 
 
         // print_Matrix(K,np);
@@ -471,36 +507,30 @@ int main(){
 
 
 
-        // // ERRO NORMA L2
-
-        // double erul2 = 0.0;
-        // for (int j = 0; j < nel; j++) {
-        //     double eru = 0.0;
-
-        //     for (int l = 0; l < nint-1; l++) {
-        //         // std::cout << "f(xx) - uh = " << fields_uTrue[j] << " - " << fields_u[j] << endl;
-        //         // cout << w[l] << endl;
-        //         eru = eru + pow(u_exact(xl[j*(nen-1)+l]) - u_eigen(j*(nen-1)+l) ,2)*w[l]*h/2;
-        //     }
-
-        //     erul2 = erul2 + eru;
-        // }
-        // erul2 = sqrt(erul2);
-
-
-        // ERRO NORMA INFTY
+        // ERRO NORMA L2
 
         double erul2 = 0.0;
-        double eru = 0.0;
 
-        for (int j = 0; j < np; j++) {
-            
-            eru = abs(u_exact(xl[j]) - u_eigen(j));
-            if(eru > erul2){
-                erul2 = eru;
+        double uh;
+        
+        for (int j = 0; j < nel; j++) {
+            double eru = 0.0;
+
+            for (int l = 0; l < nint; l++) {
+
+                xx = h/2*pt[l] + 0.5*(xl[j*(nen-1) + nen-1] + xl[j*(nen-1)]);
+
+                uh = interpolate_uh(xx, xl, u_eigen);
+                
+                cout << " | u_exact(xx) = " << u_exact(xx) << endl;
+                
+                eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
             }
-            
+            cout << endl;
+
+            erul2 = erul2 + eru;
         }
+        erul2 = sqrt(erul2);
 
 
 
@@ -530,7 +560,7 @@ int main(){
         //return 1; // Return an error code
     }
 
-    csvFile << std::fixed << std::setprecision(16);
+    // csvFile << std::fixed << std::setprecision(16);
 
     for (int i = 0; i < size-2; i++) {
         csvFile << erros[i];
