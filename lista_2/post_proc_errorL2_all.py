@@ -30,15 +30,15 @@ for i in range(len(filtered_dir)):
     
     N = np.array([int(filename[5:9]) for filename in filtered_files])
     
-    a = -2.0
-    b = 2.0
+    a = 0.0
+    b = 1.5
     h = np.array([abs(b-a)/n for n in N])
 
 
     L2error = np.genfromtxt(current_directory + '/errorL2.csv', delimiter=',', max_rows=1)
 
-    x = -np.log(h)
-    y = np.log(L2error)
+    x = -np.log10(h)
+    y = np.log10(L2error)
 
     model = LinearRegression()
     x_reshaped = [[val] for val in x]
