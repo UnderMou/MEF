@@ -54,12 +54,12 @@ for i in range(len(filtered_dir)):
     # print(alpha)
 
 
-    plt.plot(x,y,linestyle='-',marker='o', c=colors[i], label='k = ' + filtered_dir[i][1:] + ' | slope = ' + "{:.2f}".format(slope))
+    plt.plot(x,y,linestyle='-',marker='o', c=colors[i], label='k = ' + filtered_dir[i][1:] + ' | slope = ' + "{:.4f}".format(slope))
 
     plt.plot(x[h2off:],model.predict(x_reshaped[h2off:]),linestyle='--', c=colors[i])
 
-plt.xlabel("$-\log(h)$")
-plt.ylabel("$\log(error)$")
+plt.xlabel("$-\log_{10}(h)$")
+plt.ylabel("$\log_{10}(error)$")
 plt.legend()
 plt.grid(True)
 plt.savefig('ErrorsL2.pdf', dpi=300, bbox_inches='tight')

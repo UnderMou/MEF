@@ -113,7 +113,7 @@ int main(){
 
     int first = 0;
 
-    const int size = 9; 
+    const int size = 8; 
     vector<double> erros(size-first);
 
     
