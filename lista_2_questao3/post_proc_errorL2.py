@@ -28,12 +28,12 @@ print(L2error)
 x = -np.log(h)
 y = np.log(L2error)
 
-model = LinearRegression()
-x_reshaped = [[val] for val in x]
-model.fit(x_reshaped[0:], y[0:].tolist())
-slope = model.coef_[0]
-slope = abs(slope)
-print(f"Linear regression slope (angular coefficient): {slope}")
+# model = LinearRegression()
+# x_reshaped = [[val] for val in x]
+# model.fit(x_reshaped[0:], y[0:].tolist())
+# slope = model.coef_[0]
+# slope = abs(slope)
+# print(f"Linear regression slope (angular coefficient): {slope}")
 
 alpha = abs(y[-1] - y[-2]) / abs(x[-1] - x[-2])
 print(alpha)

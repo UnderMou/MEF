@@ -7,4 +7,4 @@ g++ -I ../eigen/ mef_app.cpp -o mef_app
 # ./erroL2
 
 python3 post_proc_plots.py
-# python3 post_proc_errorL2.py
+python3 post_proc_errorL2.py

@@ -13,7 +13,7 @@ def custom_sort(s):
     return (integer_part, s)
 
 x = np.linspace(0.0,1.0,1024)
-epsilon = 1e-4
+epsilon = 1e-3
 u = f(x, epsilon)
 
 file_list = os.listdir("./")
