@@ -54,7 +54,7 @@ for i in range(len(filtered_dir)):
     # print(alpha)
 
 
-    plt.plot(x,y,linestyle='-',marker='o', c=colors[i], label='k = ' + filtered_dir[i][1:] + ' | slope = ' + "{:.2f}".format(slope))
+    plt.plot(x,y,linestyle='-',marker='o', c=colors[i], label='k = ' + filtered_dir[i][1:] + ' | slope = ' + "{:.4f}".format(slope))
 
     plt.plot(x[h2off:],model.predict(x_reshaped[h2off:]),linestyle='--', c=colors[i])
 
