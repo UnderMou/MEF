@@ -64,3 +64,62 @@ plt.legend()
 plt.grid(True)
 plt.savefig('ErrorsL2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
+
+
+
+
+
+
+for i in range(len(filtered_dir)):
+    current_directory = os.getcwd()
+    current_directory+='/'+filtered_dir[i]
+    
+
+    file_list = os.listdir(current_directory)
+    
+
+    filtered_files = [filename for filename in file_list if filename.startswith('data_')]
+    filtered_files = sorted(filtered_files, key=custom_sort) 
+
+    
+    N = np.array([int(filename[5:9]) for filename in filtered_files])
+    
+    a = 0.0
+    b = 1.5
+    h = np.array([abs(b-a)/n for n in N])
+
+
+    L2error = np.genfromtxt(current_directory + '/error_derL2.csv', delimiter=',', max_rows=1)
+
+    x = -np.log10(h)
+    y = np.log10(L2error)
+
+    print(x,y)
+
+    model = LinearRegression()
+    x_reshaped = [[val] for val in x]
+
+    h2off = 2
+
+    model.fit(x_reshaped[h2off:], y[h2off:].tolist())
+    slope = model.coef_[0]
+    slope = abs(slope)
+    # print(f"Linear regression slope (angular coefficient): {slope}")
+
+    # alpha = abs(y[-1] - y[-2]) / abs(x[-1] - x[-2])
+    # print(alpha)
+
+
+    plt.plot(x,y,linestyle='-',marker='o', c=colors[i], label='k = ' + filtered_dir[i][1:] + ' | slope = ' + "{:.4f}".format(slope))
+
+    plt.plot(x[h2off:],model.predict(x_reshaped[h2off:]),linestyle='--', c=colors[i])
+
+plt.xlabel("$-\log_{10}(h)$")
+plt.ylabel("$\log_{10}(error \quad derivada)$")
+plt.legend()
+plt.grid(True)
+plt.savefig('Errors_derL2.pdf', dpi=300, bbox_inches='tight')
+plt.show()

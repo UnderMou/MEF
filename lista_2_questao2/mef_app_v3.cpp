@@ -55,6 +55,11 @@ double u_exact(double xx){
     // return 1.0;
 }
 
+double du_exact(double xx){
+    return 3.0*pow(xx,2) - 1.0;
+    // return 1.0;
+}
+
 double K_func(double xx){
     return xx;
     // return 1.0;
@@ -125,7 +130,7 @@ int main(){
 
     const int size = 9; 
     vector<double> erros(size-first);
-
+    vector<double> erros_der(size-first);
     
 
     // Initialize the array (optional)
@@ -139,7 +144,7 @@ int main(){
         double b = 1.0;
 
         
-        int k = 1;          // polynomial degree
+        int k = 4;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
@@ -375,22 +380,38 @@ int main(){
         }
         erul2 = sqrt(erul2);
 
-
-
-
-
         erros[kk-first] = erul2;
 
 
+
+        // ERRO NORMA L2 - DERIVADA
+
+        double erdul2 = 0.0;
+        
+        for (int j = 0; j < nel; j++) {
+            double erdu = 0.0;
+
+            for (int l = 0; l < nint; l++) {
+
+                double duh = 0.0;
+
+                xx = 0.0;
+
+                for (int i = 0; i < nen; i++){
+                    duh += dshg[i][l] * u_solution[j*(nen-1)+i] * 2.0/h;
+                    xx += shg[i][l]*xl[j*(nen-1) + i];
+                }
+                
+                erdu = erdu + pow(du_exact(xx) - duh ,2)*w[l]*h/2.0;
+            }
+
+            erdul2 = erdul2 + erdu;
+        }
+        erdul2 = sqrt(erdul2);
+
+        erros_der[kk-first] = erdul2;
+
     } 
-
-    // // Set precision for printing
-    
-
-    // for (int i = 0; i < size-2; i++){
-    //     cout << erros[i] << ", ";
-    // } 
-    // cout << endl;
 
 
     // ESCREVE ERRO 
@@ -414,6 +435,30 @@ int main(){
         } 
     }
     csvFile.close();
+
+
+
+    // ESCREVE ERRO - DERIVADA
+
+    stringstream ss2;
+    ss2 << "error_derL2.csv";
+    FileName2 = ss2.str();
+
+    ofstream csvFile2(FileName2);
+    if (!csvFile.is_open()) {
+        std::cerr << "Error opening the new CSV file." << std::endl;
+        //return 1; // Return an error code
+    }
+
+    csvFile2 << std::fixed << std::setprecision(16);
+
+    for (int i = 0; i < size-first; i++) {
+        csvFile2 << erros_der[i];
+        if (i < (size - first - 1)) {
+            csvFile2 << ","; // Use a comma as a delimiter
+        } 
+    }
+    csvFile2.close();
 
     return 0;
 }

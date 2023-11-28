@@ -44,3 +44,26 @@ plt.xlabel("$-\log(h)$")
 plt.ylabel("$\log(error)$")
 plt.grid(True)
 plt.show()
+
+
+
+
+
+
+L2_derror = np.genfromtxt('error_derL2.csv', delimiter=',', max_rows=1)
+print(N,h)
+print(L2_derror)
+
+x = -np.log10(h)
+y = np.log10(L2_derror)
+
+
+alpha = abs(y[-1] - y[-2]) / abs(x[-1] - x[-2])
+print(alpha)
+
+
+plt.plot(x,y,linestyle='-',marker='o')
+plt.xlabel("$-\log(h)$")
+plt.ylabel("$\log(error \quad derivada)$")
+plt.grid(True)
+plt.show()
