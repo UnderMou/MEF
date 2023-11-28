@@ -251,8 +251,11 @@ int main(){
                     Fe[j] = Fe[j] + f(xx)*shg_PG[j][l]*w[l]*h/2.0; 
 
                     for (int i = 0; i < nen; i++){
-                        Ke[i][j] = Ke[i][j] + K_func(xx, epsilon)*(dshg[i][l]*2.0/h)*(dshg_PG[j][l]*2.0/h)*w[l]*h/2.0 
-                               + gamma_func(xx)*shg[i][l]*shg_PG[j][l]*w[l]*h/2;
+                        // Ke[i][j] = Ke[i][j] + K_func(xx, epsilon)*(dshg[i][l]*2.0/h)*(dshg_PG[j][l]*2.0/h)*w[l]*h/2.0 
+                        //        + gamma_func(xx)*shg[i][l]*shg_PG[j][l]*w[l]*h/2;
+
+                        Ke[i][j] = Ke[i][j] + K_func(xx, epsilon)*(dshg[i][l]*2.0/h)*(dshg[j][l]*2.0/h)*w[l]*h/2.0 
+                                 + gamma_func(xx)*shg_PG[i][l]*shg_PG[j][l]*w[l]*h/2;
                     }
 
                 }
