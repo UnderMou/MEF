@@ -8,7 +8,9 @@
 // #include <Eigen/Dense>
 
 #include "shl_v2.cpp"
+#include "shl_wh.cpp"
 #include "dshl_v2.cpp"
+#include "dshl_wh.cpp"
 #include "we_v2.cpp"
 #include "pts_v2.cpp"
 
@@ -46,28 +48,22 @@ void print_Vector(vector<double> F, int dim){
 }
 
 double f(double xx){
-    return pow(xx,5) - pow(xx,3) - 8*pow(xx,2) + 1.0;
-    // return 1.0;
+    return 0.0;
 }
 
-double u_exact(double xx){
-    return pow(xx,3) - xx + 1.0;
-    // return 1.0;
+double u_exact(double xx, double epsilon){
+    // double c2 = (exp(-1.0/sqrt(epsilon)) - 1.0) / (exp(1.0/sqrt(epsilon)) - exp(-1.0/sqrt(epsilon)));
+    // double c1 = -1.0 - c2;
+    // return c1*exp(-xx/sqrt(epsilon)) + c2*exp(xx/sqrt(epsilon)) + 1.0;
+    return 0.0;
 }
 
-double du_exact(double xx){
-    return 3.0*pow(xx,2) - 1.0;
-    // return 1.0;
-}
-
-double K_func(double xx){
-    return xx;
-    // return 1.0;
+double K_func(double xx, double epsilon){
+    return epsilon;
 }
 
 double gamma_func(double xx){
-    return xx*xx;
-    // return 1.0;
+    return 1.0;
 }
 
 // Eigen::MatrixXd convert_matrix(vector<vector<double>> M, int dim){
@@ -91,6 +87,7 @@ double gamma_func(double xx){
 
 //     return F_eigen;
 // }
+
 
 // Function to perform Gaussian elimination and back substitution
 void solveLinearSystem(vector<vector<double>>& A, vector<double>& b, vector<double>& x) {
@@ -126,33 +123,54 @@ void solveLinearSystem(vector<vector<double>>& A, vector<double>& b, vector<doub
 
 int main(){
 
-    int first = 0;
+    const int size = 3; 
 
-    const int size = 9; 
-    vector<double> erros(size-first);
-    vector<double> erros_der(size-first);
+    double epsilon = 1e-2;
+    cout << "epsilon = " << epsilon << endl;
+
+    double kappa = 1.0;
+    cout << "kappa = " << kappa << endl;
     
+    int first = 2;
+
+    vector<double> erros(size-first);
 
     // Initialize the array (optional)
     for (int kk = first; kk < size; ++kk) {
 
         int nel = pow(2,kk); // number of elements
+        nel = 10;
+
         cout << "Runing nel = " << nel << "\n";
 
         // Defining the domain
         double a = 0.0;
         double b = 1.0;
 
+        // double h_crit = 2.0*epsilon/kappa;
+        // nel = (b-a)/h_crit;
+       
+
         
-        int k = 4;          // polynomial degree
+        int k = 1;          // polynomial degree
         int np = k*nel+1;   // mesh total nodes
 
         int nen = k+1;      // number of element nodes
         int nint = k+1;     // number of integration points
 
         double h = (b-a)/nel;    // element length
+        //h = h_crit;
 
-        // cout << "h = " << h << endl;
+        cout << "h = " << h << endl;
+ 
+        double Pe_h = abs(kappa)*h/(2*epsilon);
+        cout << "Pe_h = " << Pe_h << endl;
+
+        double beta = 1.0 - 1.0/Pe_h; // beta >= este valor
+        cout << "beta = " << beta << endl;
+
+        double gamma = beta*kappa*h/2.0; 
+
 
         vector<double> xl(np,0.0);
         
@@ -181,8 +199,14 @@ int main(){
         vector<vector<double>> shg(nint, vector<double>(nint));
         shg = init_Matrix(nint,nint);
 
+        vector<vector<double>> shg_wh(nint, vector<double>(nint));
+        shg_wh = init_Matrix(nint,nint);
+
         vector<vector<double>> dshg(nint, vector<double>(nint));
         dshg = init_Matrix(nint,nint);
+
+        vector<vector<double>> dshg_wh(nint, vector<double>(nint));
+        dshg_wh = init_Matrix(nint,nint);
 
         vector<double> Fe(nen);
         Fe = init_F(nen);
@@ -203,8 +227,12 @@ int main(){
 
             shg = shl(nen,nint);
             // print_Matrix(shg,nen);
+            shg_wh = shl_wh(nen,nint,beta);
+            // print_Matrix(shg_wh,nen);
             dshg = dshl(nen,nint);
             // print_Matrix(dshg,nen);
+            dshg_wh = dshl_wh(nen,nint,beta);
+            // print_Matrix(dshg_wh,nen);
             w = we(nint);
             // print_Vector(w,nint);
             pt = pts(nint);
@@ -222,11 +250,12 @@ int main(){
                 }
 
                 for (int j = 0; j < nen; j++){
-                    Fe[j] = Fe[j] + f(xx)*shg[j][l]*w[l]*h/2.0; 
+                    Fe[j] = Fe[j] + f(xx)*shg_wh[j][l]*w[l]*h/2.0; 
 
                     for (int i = 0; i < nen; i++){
-                        Ke[i][j] = Ke[i][j] + K_func(xx)*(dshg[i][l]*2.0/h)*(dshg[j][l]*2.0/h)*w[l]*h/2.0 
-                               + gamma_func(xx)*shg[i][l]*shg[j][l]*w[l]*h/2;
+                        Ke[i][j] = Ke[i][j] + K_func(xx, epsilon)*(dshg[i][l]*2.0/h)*(dshg_wh[j][l]*2.0/h)*w[l]*h/2.0
+                               // + gamma_func(xx)*shg[i][l]*shg[j][l]*w[l]*h/2
+                                + kappa*(dshg[j][l]*2.0/h)*(shg_wh[i][l])*w[l]*h/2.0;
                     }
 
                 }
@@ -270,10 +299,10 @@ int main(){
 
         double kappa_a = 1e9;
         double kappa_b = 1e9;
-        double g_a = 1.0;
+        double g_a = 0.0;
         double g_b = 1.0;
         double q_a = 0.0;
-        double q_b = 4.0;
+        double q_b = 0.0;
 
         K[0][0] += kappa_a;
         K[np-1][np-1] += kappa_b;
@@ -333,7 +362,7 @@ int main(){
         }
         csvFile << endl;
         for (int i = 0; i < np; ++i) {
-            csvFile << u_exact(xl[i]);
+            csvFile << u_exact(xl[i], epsilon);
             if (i < np - 1) {
                 csvFile << ","; // Use a comma as a delimiter
             }
@@ -373,45 +402,29 @@ int main(){
                     xx += shg[i][l]*xl[j*(nen-1) + i];
                 }
                 
-                eru = eru + pow(u_exact(xx) - uh ,2)*w[l]*h/2;
+                eru = eru + pow(u_exact(xx, epsilon) - uh ,2)*w[l]*h/2;
             }
 
             erul2 = erul2 + eru;
         }
         erul2 = sqrt(erul2);
 
+
+
+
+
         erros[kk-first] = erul2;
 
 
-
-        // ERRO NORMA L2 - DERIVADA
-
-        double erdul2 = 0.0;
-        
-        for (int j = 0; j < nel; j++) {
-            double erdu = 0.0;
-
-            for (int l = 0; l < nint; l++) {
-
-                double duh = 0.0;
-
-                xx = 0.0;
-
-                for (int i = 0; i < nen; i++){
-                    duh += dshg[i][l] * u_solution[j*(nen-1)+i] * 2.0/h;
-                    xx += shg[i][l]*xl[j*(nen-1) + i];
-                }
-                
-                erdu = erdu + pow(du_exact(xx) - duh ,2)*w[l]*h/2.0;
-            }
-
-            erdul2 = erdul2 + erdu;
-        }
-        erdul2 = sqrt(erdul2);
-
-        erros_der[kk-first] = erdul2;
-
     } 
+
+    // // Set precision for printing
+    
+
+    // for (int i = 0; i < size-2; i++){
+    //     cout << erros[i] << ", ";
+    // } 
+    // cout << endl;
 
 
     // ESCREVE ERRO 
@@ -422,7 +435,7 @@ int main(){
 
     ofstream csvFile(FileName2);
     if (!csvFile.is_open()) {
-        std::cerr << "Error opening the new CSV file - error." << std::endl;
+        std::cerr << "Error opening the new CSV file." << std::endl;
         //return 1; // Return an error code
     }
 
@@ -435,30 +448,6 @@ int main(){
         } 
     }
     csvFile.close();
-
-
-
-    // ESCREVE ERRO - DERIVADA
-
-    stringstream ss2;
-    ss2 << "error_derL2.csv";
-    FileName2 = ss2.str();
-
-    ofstream csvFile2(FileName2);
-    if (!csvFile2.is_open()) {
-        std::cerr << "Error opening the new CSV file - derror." << std::endl;
-        //return 1; // Return an error code
-    }
-
-    csvFile2 << std::fixed << std::setprecision(16);
-
-    for (int i = 0; i < size-first; i++) {
-        csvFile2 << erros_der[i];
-        if (i < (size - first - 1)) {
-            csvFile2 << ","; // Use a comma as a delimiter
-        } 
-    }
-    csvFile2.close();
 
     return 0;
 }
