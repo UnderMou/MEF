@@ -1,5 +1,8 @@
 #!/bin/bash
 
+rm plotdata_*
+rm data_*
+
 g++ -o mef_app mef_app.cpp
 ./mef_app
 
