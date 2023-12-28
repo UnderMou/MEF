@@ -193,7 +193,7 @@ std::vector<double> addVectors(const std::vector<double>& vector1, const std::ve
     return result;
 }
 
-bool isMultiple(double t, double dt_save, double tolerance = 1e-3) {
+bool isMultiple(double t, double dt_save, double tolerance = 1e-4) {
     // Check if the absolute difference is within the specified tolerance
     return std::abs(t - dt_save * std::round(t / dt_save)) < tolerance;
 }
@@ -208,7 +208,7 @@ int main(){
 
     
 
-    int nel = 75;
+    int nel = 100;
     cout << "Runing nel = " << nel << "\n";
     // Defining the domain
     double a = 0.0;
@@ -230,6 +230,10 @@ int main(){
     double dt = h*h;
     double dt_save = 0.25;
     cout << "dt = " << dt << endl;
+
+
+    double CFL = kappa*dt/h;
+    cout << "CFL = " << CFL << endl;
 
 
     int k = 1;          // polynomial degree
@@ -330,6 +334,11 @@ int main(){
 
         double xx = 0.0;
 
+        M = init_Matrix(np,np);
+        K = init_Matrix(np,np);
+        C = init_Matrix(np,np);
+        F = init_F(np);
+
         // Global problem construction
         for (int n = 0; n < nel; n++){
             
@@ -369,7 +378,7 @@ int main(){
                         Ke[i][j] = Ke[i][j] + K_func(xx, epsilon)*(dshg[i][l]*2.0/h)*(dshg[j][l]*2.0/h)*w[l]*h/2.0
                                    + gamma_func(xx)*shg[i][l]*shg_wh[j][l]*w[l]*h/2;
                     
-                        Me[i][j] = Me[i][j] + (1.0/dt)*shg[i][l]*shg_wh[j][l]*w[l]*h/2;
+                        Me[i][j] = Me[i][j] + (1.0/dt)*shg[i][l]*shg[j][l]*w[l]*h/2;
 
                         Ce[i][j] = Ce[i][j] + kappa*(dshg[j][l]*2.0/h)*(shg_wh[i][l])*w[l]*h/2.0
                                    - K_func(xx, epsilon)*(dshg2[i][l]*2.0/h)*kappa*tau*(dshg[j][l]*2.0/h)*w[l]*h/2.0;
